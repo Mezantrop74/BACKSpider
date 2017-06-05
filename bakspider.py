@@ -154,19 +154,22 @@ class WebPage(HTMLParser):
             return 404
 
 
-# TODO: Catch FileNotFoundError
 def scan_dirs(root, dir_list):
     print("Checking for additional directories to search...")
-    with open(dir_list) as file:
-        for dir_line in file:
-            url = parse.urljoin(root, dir_line)
-            if WebPage.response_code(url) == 200:
-                url = url.rstrip()
-                if not url.endswith('/'):
-                    url += '/'
+    try:
+        with open(dir_list) as file:
+            for dir_line in file:
+                url = parse.urljoin(root, dir_line)
+                if WebPage.response_code(url) == 200:
+                    url = url.rstrip()
+                    if not url.endswith('/'):
+                        url += '/'
 
-                print("[200 - OK] Directory found: ", url)
-                additional_dirs.append(url)
+                    print("[200 - OK] Directory found: ", url)
+                    additional_dirs.append(url)
+    except FileNotFoundError:
+        print("[ERROR] Could not find the file you specified. ({0})".format(dir_list))
+        sys.exit(1)
     return
 
 
@@ -196,12 +199,13 @@ def process(args):
 
     if root.is_accessible():
         print("{0} [200 - OK] :: Beginning scan...".format(args.url))
-        # TODO: Check the dir argument has been passed.
-        scan_dirs(args.url, args.dir)
-        input("Continue?...")
+
+        if args.dir:
+            scan_dirs(args.url, args.dir)
+
         root.scan()
     else:
-        print("The URL you specified is returning an invalid response code.")
+        print("[ERROR] The URL you specified is returning an invalid response code.")
         sys.exit(1)
     return
 
