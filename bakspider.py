@@ -1,19 +1,26 @@
-import os
+#!/usr/bin/env python3
+# TODO: Getting too large for one file, split into a full project.
 import sys
+import os
 import argparse
 from urllib import request
-from urllib import error
 from urllib import parse
 from urllib.parse import urlsplit
 from urllib.parse import urlparse
 from html.parser import HTMLParser
+from multiprocessing import Pool
 
+if sys.version_info < (3, 0):
+    print("[ERROR] BAKSpider requires Python 3.0 or above")
+    sys.exit(1)
+
+# TODO: Reduce the scope of these if possible.
+max_threads = 8
 spidered_links = []
 checked_files = []
 additional_dirs = []
 backup_extensions = ["backup", "bck", "old", "save", "bak", "sav", "~",
                      "copy", "old", "orig", "tmp", "txt", "back"]
-skipped_extensions = ["pdf"]
 
 
 class WebPage(HTMLParser):
@@ -32,8 +39,6 @@ class WebPage(HTMLParser):
         return
 
     def parse_href(self, link):
-        #print("href found:", link)
-
         # TODO: Maybe consolidate these if-statements, will have to calculate performance.
         if "://" in link:  # Check if relative or absolute
             if link.startswith("{0.scheme}://{0.netloc}/".format(urlsplit(self.root))):
@@ -45,14 +50,10 @@ class WebPage(HTMLParser):
         return
 
     def parse_url(self, url):
-
         parsed_url = urlparse(url)
         clean_url = parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path
 
-        #print("Parsed URL:", url, "Clean URL:", clean_url)
-
         self.spider_url(url, clean_url);
-
         return
 
     def spider_url(self, url_to_spider, file_only_url):
@@ -63,29 +64,27 @@ class WebPage(HTMLParser):
         if file_only_url not in checked_files and not file_only_url.endswith('/'):
             # Check for backups here
             print("Checking {0} for backups now::".format(file_only_url))
-            self.scan_for_backups(file_only_url)
+            self.check_dirs_for_backups(file_only_url)
             checked_files.append(file_only_url)
 
         if url_to_spider not in spidered_links:
             root = url_to_spider[:url_to_spider.rfind("/") + 1]
-            #print("Root is:", root)
 
+            # Begin spidering a new page
             spidered_links.append(url_to_spider)
-
-            #input("Please ENTER to continue...")
-
             WebPage(url_to_spider, root).scan()
         return
 
-    def is_valid_url(self, url):
+    @staticmethod
+    def is_valid_url(url):
         if url.startswith("mailto"):
             return 0
 
         return 1
 
     # TODO: Check for certain extensions (exclude PDF etc.)
-    # TODO: Move core login into a seperate method.
-    def scan_for_backups(self, url):
+    # TODO: This is still being called when the --dir option isn't specified
+    def check_dirs_for_backups(self, url):
         self.check_url(url)
 
         filename = os.path.basename(url)
@@ -116,7 +115,6 @@ class WebPage(HTMLParser):
 
             if self.response_code(bak_url) == 200:
                 print("[200 - OK] Backup found: {0}".format(bak_url))
-        return
 
     def scan(self):
         print("---###[ SCANNING {0} ]###---".format(self.url))
@@ -129,8 +127,6 @@ class WebPage(HTMLParser):
                 self.feed(line.decode(page_enc))
         except UnicodeDecodeError:
             pass
-
-        return
 
     def is_accessible(self):
         return self.response_code(self.url) == 200
@@ -150,27 +146,33 @@ class WebPage(HTMLParser):
         try:
             return request.urlopen(url).getcode()
         except Exception as e:
-            print (e)
             return 404
-
 
 def scan_dirs(root, dir_list):
     print("Checking for additional directories to search...")
     try:
         with open(dir_list) as file:
+            dir_urls = []
             for dir_line in file:
-                url = parse.urljoin(root, dir_line)
-                if WebPage.response_code(url) == 200:
-                    url = url.rstrip()
-                    if not url.endswith('/'):
-                        url += '/'
+                dir_urls.append(parse.urljoin(root, dir_line))
 
-                    print("[200 - OK] Directory found: ", url)
-                    additional_dirs.append(url)
+        threadpool = Pool(int(max_threads))
+        threadpool.map(scan_dirs_threaded, dir_urls)
+
     except FileNotFoundError:
         print("[ERROR] Could not find the file you specified. ({0})".format(dir_list))
         sys.exit(1)
-    return
+
+
+def scan_dirs_threaded(url):
+    if WebPage.response_code(url) == 200:
+        url = url.rstrip()
+        if not url.endswith('/'):
+            url += '/'
+
+        if url not in additional_dirs:
+            print("[200 - OK] Directory found: ", url)
+            additional_dirs.append(url)
 
 
 def parse_args():
@@ -180,9 +182,14 @@ def parse_args():
         epilog="Please report any issues to: matt@m-croston.co.uk"
     )
 
-    parser.add_argument("-u", "--url", help="The Target URL (e.g. http://www.example.com/)", required=True)
+    required = parser.add_argument_group("required arguments")
+    required.add_argument("-u", "--url", help="The Target URL (e.g. http://www.example.com/)", required=True)
+
     parser.add_argument("-d", "--dir", help="File containing additional directories to check for backups, "
-                                            "this option can increase scan time dramatically.", required=False)
+                        "this option can increase scan time dramatically.", required=False)
+
+    parser.add_argument("-t", help="Maximum number of concurrent threads (Default: 8)",
+                        metavar="THREAD-COUNT", default=8, required=False)
 
     args = parser.parse_args()
     if not any(vars(args).values()):
@@ -190,7 +197,6 @@ def parse_args():
         sys.exit(1)
 
     process(args)
-    return
 
 
 # TODO: Check the URL is in the correct format http://www.example.com/
@@ -199,6 +205,8 @@ def process(args):
 
     if root.is_accessible():
         print("{0} [200 - OK] :: Beginning scan...".format(args.url))
+        global max_threads
+        max_threads = args.t
 
         if args.dir:
             scan_dirs(args.url, args.dir)
@@ -207,7 +215,6 @@ def process(args):
     else:
         print("[ERROR] The URL you specified is returning an invalid response code.")
         sys.exit(1)
-    return
 
 
 if __name__ == "__main__":
