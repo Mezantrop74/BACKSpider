@@ -133,5 +133,5 @@ class WebSpider(HTMLParser):
     def response_code(url):
         try:
             return request.urlopen(url).getcode()
-        except Exception as e:
+        except Exception:
             return 404

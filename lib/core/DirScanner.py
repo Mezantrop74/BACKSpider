@@ -18,8 +18,8 @@ class DirScanner:
                 for dir_line in file:
                     dir_urls.append(parse.urljoin(root_url, dir_line))
 
-            threadpool = Pool(int(self.threads))
-            threadpool.map(self.scan_dirs_threaded, dir_urls)
+            thread_pool = Pool(int(self.threads))
+            thread_pool.map(self.scan_dirs_threaded, dir_urls)
 
         except FileNotFoundError:
             print("[ERROR] Could not find the file you specified. ({0})".format(dir_list))
