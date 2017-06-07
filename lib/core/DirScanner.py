@@ -2,6 +2,7 @@
 import sys
 from urllib import parse
 from multiprocessing import Pool
+from lib.core import Util
 from lib.core import WebSpider
 
 
@@ -13,10 +14,11 @@ class DirScanner:
     def scan(self, root_url, dir_list):
         print("Checking for additional directories to search...")
         try:
-            with open(dir_list) as file:
-                dir_urls = []
-                for dir_line in file:
-                    dir_urls.append(parse.urljoin(root_url, dir_line))
+            dir_urls = []
+            dir_lines = Util.read_file_into_array(dir_list)
+
+            for dir_line in dir_lines:
+                dir_urls.append(parse.urljoin(root_url, dir_line))
 
             thread_pool = Pool(int(self.threads))
             thread_pool.map(self.scan_dirs_threaded, dir_urls)

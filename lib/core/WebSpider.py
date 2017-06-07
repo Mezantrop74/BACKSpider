@@ -5,22 +5,22 @@ from urllib import parse
 from urllib import request
 from urllib.parse import urlsplit
 from urllib.parse import urlparse
+from lib.core import Util
 
 spidered_links = []
-
-backup_extensions = ["backup", "bck", "old", "save", "bak", "sav", "~",
-                     "copy", "old", "orig", "tmp", "txt", "back"]
-
 
 class WebSpider(HTMLParser):
     """Class to help with our webpage operations."""
     # TODO: Calculate root rather than have it passed.
     # TODO: Remove the recursive functionality, one scan per class instance.
-    def __init__(self, url, root, additional_dirs=None):
+    # TODO: Don't pass whole argparse object
+    def __init__(self, url, root, args, additional_dirs=None):
         HTMLParser.__init__(self)
+        self.args = args
         self.url = url
         self.root = root
         self.additional_dirs = additional_dirs
+        self.backup_extensions = Util.read_file_into_array(args.ext)
         return
 
     def handle_starttag(self, tag, attrs):
@@ -67,7 +67,7 @@ class WebSpider(HTMLParser):
 
             # Begin spidering a new page
             spidered_links.append(url_to_spider)
-            WebSpider(url_to_spider, root).scan()
+            WebSpider(url_to_spider, root, self.args).scan()
         return
 
     @staticmethod
@@ -96,7 +96,7 @@ class WebSpider(HTMLParser):
     # TODO: Move backup_extensions into their own file and allow seperate argument for custom file.
     def check_url(self, url):
         # Check with original extension
-        for ext in backup_extensions:
+        for ext in self.backup_extensions:
             bak_url = "{0}.{1}".format(url, ext)
             print(bak_url)
 
@@ -105,7 +105,7 @@ class WebSpider(HTMLParser):
 
         # Check without original extension
         url = url.rsplit('.', 1)[0]
-        for ext in backup_extensions:
+        for ext in self.backup_extensions:
             bak_url = "{0}.{1}".format(url, ext)
             print(bak_url)
 
