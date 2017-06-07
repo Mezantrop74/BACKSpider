@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from html.parser import HTMLParser
 from urllib import parse
@@ -10,14 +11,16 @@ spidered_links = []
 backup_extensions = ["backup", "bck", "old", "save", "bak", "sav", "~",
                      "copy", "old", "orig", "tmp", "txt", "back"]
 
+
 class WebSpider(HTMLParser):
     """Class to help with our webpage operations."""
     # TODO: Calculate root rather than have it passed.
     # TODO: Remove the recursive functionality, one scan per class instance.
-    def __init__(self, url, root):
+    def __init__(self, url, root, additional_dirs=None):
         HTMLParser.__init__(self)
         self.url = url
         self.root = root
+        self.additional_dirs = additional_dirs
         return
 
     def handle_starttag(self, tag, attrs):
@@ -53,8 +56,10 @@ class WebSpider(HTMLParser):
 
         if file_only_url not in checked_files and not file_only_url.endswith('/'):
             # Check for backups here
-            print("Checking {0} for backups now::".format(file_only_url))
+            print("Checking {0} for backups now:".format(file_only_url))
+            self.check_url(file_only_url)
             #self.check_dirs_for_backups(file_only_url) # TODO: Enable this if directory scanning is enabled.
+
             checked_files.append(file_only_url)
 
         if url_to_spider not in spidered_links:
@@ -80,7 +85,7 @@ class WebSpider(HTMLParser):
         filename = os.path.basename(url)
         print("Checking dirs for", filename)
 
-        for dir_name in additional_dirs:
+        for dir_name in self.additional_dirs:
             dir_url = parse.urljoin(dir_name, filename)
             self.check_url(dir_url)
 
