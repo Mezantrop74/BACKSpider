@@ -1,9 +1,7 @@
 #!/usr/bin/env python3
-import sys
 from urllib import parse
 from multiprocessing import Pool
 from lib.core import Util
-from lib.core import WebSpider
 
 
 class DirScanner:

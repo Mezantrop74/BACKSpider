@@ -9,6 +9,7 @@ if sys.version_info < (3, 0):
     print("[ERROR] BAKSpider requires Python 3.0 or above")
     sys.exit(1)
 
+
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Attempts to find old files such as un-removed backups/configs on the web "
