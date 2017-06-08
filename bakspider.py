@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import argparse
+from lib.core import Util
 from lib.core import WebSpider
 from lib.core import DirScanner
 
@@ -12,7 +13,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Attempts to find old files such as un-removed backups/configs on the web "
                     "server by either crawling the website or using dictionary based attacks.",
-        epilog="Please report any issues to: matt@m-croston.co.uk"
+        epilog="Please report any issues to: bugs@m-croston.co.uk"
     )
 
     required = parser.add_argument_group("required arguments")
@@ -37,16 +38,22 @@ def parse_args():
 
 # TODO: Check the URL is in the correct format http://www.example.com/
 def process(args):
-    root = WebSpider(args.url, args.url, args)
-
-    if root.is_accessible():
+    if Util.is_200_response(args.url):
         print("{0} [200 - OK] :: Beginning scan...".format(args.url))
 
         if args.dir:
             dirscan = DirScanner(args.t)
-            dirscan.scan(args.url, args.dir)
+            found_dirs = dirscan.scan(args.url, args.dir)
 
-        root.scan()
+            for dir in found_dirs:
+                print(dir)
+                input("Cont?")
+
+            root_page = WebSpider(args.url, args.url, args, found_dirs)
+        else:
+            root_page = WebSpider(args.url, args.url, args)
+
+        root_page.scan()
     else:
         print("[ERROR] The URL you specified is returning an invalid response code.")
         sys.exit(1)

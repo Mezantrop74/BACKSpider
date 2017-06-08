@@ -45,11 +45,11 @@ class WebSpider(HTMLParser):
         parsed_url = urlparse(url)
         clean_url = parsed_url.scheme + "://" + parsed_url.netloc + parsed_url.path
 
-        self.spider_url(url, clean_url);
+        self.spider_url(url, clean_url)
         return
 
     def spider_url(self, url_to_spider, file_only_url):
-        if not self.is_valid_url(file_only_url):
+        if not Util.is_valid_url(file_only_url):
             return
 
         checked_files = []
@@ -58,7 +58,7 @@ class WebSpider(HTMLParser):
             # Check for backups here
             print("Checking {0} for backups now:".format(file_only_url))
             self.check_url(file_only_url)
-            #self.check_dirs_for_backups(file_only_url) # TODO: Enable this if directory scanning is enabled.
+            self.check_dirs_for_backups(file_only_url)  # TODO: Enable this if directory scanning is enabled.
 
             checked_files.append(file_only_url)
 
@@ -70,18 +70,9 @@ class WebSpider(HTMLParser):
             WebSpider(url_to_spider, root, self.args).scan()
         return
 
-    @staticmethod
-    def is_valid_url(url):
-        if url.startswith("mailto"):
-            return 0
-
-        return 1
-
     # TODO: Check for certain extensions (exclude PDF etc.)
     # TODO: This is still being called when the --dir option isn't specified
     def check_dirs_for_backups(self, url):
-        self.check_url(url)
-
         filename = os.path.basename(url)
         print("Checking dirs for", filename)
 
@@ -89,18 +80,13 @@ class WebSpider(HTMLParser):
             dir_url = parse.urljoin(dir_name, filename)
             self.check_url(dir_url)
 
-        input("Continue?...")
-
-        return
-
-    # TODO: Move backup_extensions into their own file and allow seperate argument for custom file.
     def check_url(self, url):
         # Check with original extension
         for ext in self.backup_extensions:
             bak_url = "{0}.{1}".format(url, ext)
             print(bak_url)
 
-            if self.response_code(bak_url) == 200:
+            if Util.is_200_response(bak_url):
                 print("[200 - OK] Backup found: {0}".format(bak_url))
 
         # Check without original extension
@@ -109,7 +95,7 @@ class WebSpider(HTMLParser):
             bak_url = "{0}.{1}".format(url, ext)
             print(bak_url)
 
-            if self.response_code(bak_url) == 200:
+            if Util.is_200_response(bak_url):
                 print("[200 - OK] Backup found: {0}".format(bak_url))
 
     def scan(self):
@@ -123,15 +109,3 @@ class WebSpider(HTMLParser):
                 self.feed(line.decode(page_enc))
         except UnicodeDecodeError:
             pass
-
-    def is_accessible(self):
-        return self.response_code(self.url) == 200
-
-    # TODO: Check for redirect to 404 page (will return 200)
-    # TODO: Allow custom timeout
-    @staticmethod
-    def response_code(url):
-        try:
-            return request.urlopen(url).getcode()
-        except Exception:
-            return 404
