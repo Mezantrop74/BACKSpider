@@ -1,3 +1,6 @@
+# COMMON BACKUP EXTENSIONS
+# Thanks to: https://github.com/fuzzdb-project/fuzzdb
+
 backup
 bck
 old

@@ -1,3 +1,5 @@
+# COMMON COMPRESSION EXTENSIONS
+
 bz2
 tar
 gz

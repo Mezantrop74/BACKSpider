@@ -10,7 +10,8 @@ class Util:
             with open(file_path) as file:
                 file_lines = []
                 for dir_line in file:
-                    file_lines.append(dir_line.rstrip())
+                    if dir_line.strip() and not dir_line[0] == '#':
+                        file_lines.append(dir_line.rstrip())
 
                 return file_lines
 
