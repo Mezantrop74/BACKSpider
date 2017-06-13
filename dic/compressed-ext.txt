@@ -1,0 +1,9 @@
+bz2
+tar
+gz
+tar.gz
+tar.bz2
+tar.xz
+zip
+rar
+xz

@@ -23,8 +23,8 @@ def parse_args():
     parser.add_argument("-d", "--dir", help="File containing additional directories to check for backups, "
                         "this option can increase scan time dramatically.", required=False)
 
-    parser.add_argument("-e", "--ext", help="File containing backup extensions to use. (Default: dic/bak-ext.txt)",
-                        default="dic/bak-ext.txt", required=False)
+    parser.add_argument("-e", "--ext", help="File containing backup extensions to use. (Default: dic/common-ext.txt)",
+                        default="dic/common-ext.txt", required=False)
 
     parser.add_argument("-t", help="Maximum number of concurrent threads (Default: 8)",
                         metavar="THREAD-COUNT", default=8, required=False)
