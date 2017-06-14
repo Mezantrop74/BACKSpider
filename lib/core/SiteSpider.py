@@ -8,20 +8,22 @@ from urllib.parse import urlparse
 from lib.core import Util
 from lib.core import DirScanner
 
-spidered_links = []
-
 
 class SiteSpider(HTMLParser):
     """Class to help with our website operations."""
     # TODO: Don't pass whole argparse object
     def __init__(self, args):
         HTMLParser.__init__(self)
+        self.spidered_links = []
+        self.checked_files = []
         self.args = args
         self.root = args.url
         self.backup_extensions = Util.read_file_into_array(args.ext)
 
         if args.dir:
             self.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
+        else:
+            self.additional_dirs = None
 
     def scan_url(self, url):
         print("---###[ SCANNING {0} ]###---".format(url))
@@ -64,25 +66,22 @@ class SiteSpider(HTMLParser):
         if not Util.is_valid_url(file_only_url):
             return
 
-        checked_files = []
-
-        if file_only_url not in checked_files and not file_only_url.endswith('/'):
+        if file_only_url not in self.checked_files and not file_only_url.endswith('/'):
             # Check for backups here
             print("Checking {0} for backups now:".format(file_only_url))
             self.check_url(file_only_url)
 
             if self.additional_dirs:
-                self.check_dirs_for_backups(file_only_url)  # TODO: Enable this if directory scanning is enabled.
+                self.check_dirs_for_backups(file_only_url)
 
-            checked_files.append(file_only_url)
+            self.checked_files.append(file_only_url)
 
-        if url_to_spider not in spidered_links:
+        if url_to_spider not in self.spidered_links:
             # Begin spidering a new page
-            spidered_links.append(url_to_spider)
+            self.spidered_links.append(url_to_spider)
 
             self.root = url_to_spider[:url_to_spider.rfind("/") + 1]
             self.scan_url(url_to_spider)
-        return
 
     # TODO: Check for certain extensions (exclude PDF etc.)
     # TODO: This is still being called when the --dir option isn't specified
