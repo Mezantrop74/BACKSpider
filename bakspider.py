@@ -2,7 +2,7 @@
 import sys
 import argparse
 from lib.core import Util
-from lib.core import WebSpider
+from lib.core import SiteSpider
 from lib.core import DirScanner
 
 if sys.version_info < (3, 0):
@@ -45,11 +45,11 @@ def process(args):
         if args.dir:
             dir_scan = DirScanner(args.t)
             found_dirs = dir_scan.scan(args.url, args.dir)
-            root_page = WebSpider(args.url, args.url, args, found_dirs)
+            root_page = SiteSpider(args, found_dirs)
         else:
-            root_page = WebSpider(args.url, args.url, args)
+            root_page = SiteSpider(args)
 
-        root_page.scan()
+        root_page.scan_url(args.url)
     else:
         print("[ERROR] The URL you specified is returning an invalid response code.")
         sys.exit(1)

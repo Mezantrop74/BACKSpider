@@ -10,19 +10,29 @@ from lib.core import Util
 spidered_links = []
 
 
-class WebSpider(HTMLParser):
+class SiteSpider(HTMLParser):
     """Class to help with our webpage operations."""
-    # TODO: Calculate root rather than have it passed.
-    # TODO: Remove the recursive functionality, one scan per class instance.
     # TODO: Don't pass whole argparse object
-    def __init__(self, url, root, args, additional_dirs=None):
+    # TODO: Move additional_dir reading into this class.
+    def __init__(self, args, additional_dirs=None):
         HTMLParser.__init__(self)
         self.args = args
-        self.url = url
-        self.root = root
+        self.root = args.url
         self.additional_dirs = additional_dirs
         self.backup_extensions = Util.read_file_into_array(args.ext)
         return
+
+    def scan_url(self, url):
+        print("---###[ SCANNING {0} ]###---".format(url))
+
+        body = request.urlopen(url)
+        page_enc = body.headers.get_content_charset() or 'UTF-8'
+
+        try:
+            for line in body:
+                self.feed(line.decode(page_enc))
+        except UnicodeDecodeError:
+            pass
 
     def handle_starttag(self, tag, attrs):
         if tag == "a":
@@ -66,15 +76,11 @@ class WebSpider(HTMLParser):
             checked_files.append(file_only_url)
 
         if url_to_spider not in spidered_links:
-            root = url_to_spider[:url_to_spider.rfind("/") + 1]
-
             # Begin spidering a new page
             spidered_links.append(url_to_spider)
 
-            if not self.additional_dirs:
-                WebSpider(url_to_spider, root, self.args).scan()
-            else:
-                WebSpider(url_to_spider, root, self.args, self.additional_dirs).scan()
+            self.root = url_to_spider[:url_to_spider.rfind("/") + 1]
+            self.scan_url(url_to_spider)
         return
 
     # TODO: Check for certain extensions (exclude PDF etc.)
@@ -104,15 +110,3 @@ class WebSpider(HTMLParser):
 
             if Util.is_200_response(bak_url):
                 print("[200 - OK] Backup found: {0}".format(bak_url))
-
-    def scan(self):
-        print("---###[ SCANNING {0} ]###---".format(self.url))
-
-        body = request.urlopen(self.url)
-        page_enc = body.headers.get_content_charset() or 'UTF-8'
-
-        try:
-            for line in body:
-                self.feed(line.decode(page_enc))
-        except UnicodeDecodeError:
-            pass

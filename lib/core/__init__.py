@@ -1,3 +1,3 @@
 from .Util import *
-from .WebSpider import *
+from .SiteSpider import *
 from .DirScanner import *
