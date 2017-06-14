@@ -9,6 +9,7 @@ from lib.core import Util
 
 spidered_links = []
 
+
 class WebSpider(HTMLParser):
     """Class to help with our webpage operations."""
     # TODO: Calculate root rather than have it passed.
@@ -58,7 +59,9 @@ class WebSpider(HTMLParser):
             # Check for backups here
             print("Checking {0} for backups now:".format(file_only_url))
             self.check_url(file_only_url)
-            self.check_dirs_for_backups(file_only_url)  # TODO: Enable this if directory scanning is enabled.
+
+            if self.additional_dirs:
+                self.check_dirs_for_backups(file_only_url)  # TODO: Enable this if directory scanning is enabled.
 
             checked_files.append(file_only_url)
 
@@ -67,7 +70,11 @@ class WebSpider(HTMLParser):
 
             # Begin spidering a new page
             spidered_links.append(url_to_spider)
-            WebSpider(url_to_spider, root, self.args).scan()
+
+            if not self.additional_dirs:
+                WebSpider(url_to_spider, root, self.args).scan()
+            else:
+                WebSpider(url_to_spider, root, self.args, self.additional_dirs).scan()
         return
 
     # TODO: Check for certain extensions (exclude PDF etc.)

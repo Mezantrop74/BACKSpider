@@ -43,13 +43,8 @@ def process(args):
         print("{0} [200 - OK] :: Beginning scan...".format(args.url))
 
         if args.dir:
-            dirscan = DirScanner(args.t)
-            found_dirs = dirscan.scan(args.url, args.dir)
-
-            for dir in found_dirs:
-                print(dir)
-                input("Cont?")
-
+            dir_scan = DirScanner(args.t)
+            found_dirs = dir_scan.scan(args.url, args.dir)
             root_page = WebSpider(args.url, args.url, args, found_dirs)
         else:
             root_page = WebSpider(args.url, args.url, args)
