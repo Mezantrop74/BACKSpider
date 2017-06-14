@@ -3,7 +3,6 @@ import sys
 import argparse
 from lib.core import Util
 from lib.core import SiteSpider
-from lib.core import DirScanner
 
 if sys.version_info < (3, 0):
     print("[ERROR] BAKSpider requires Python 3.0 or above")
@@ -27,7 +26,7 @@ def parse_args():
                         default="dic/common-ext.txt", required=False)
 
     parser.add_argument("-t", help="Maximum number of concurrent threads (Default: 8)",
-                        metavar="THREAD-COUNT", default=8, required=False)
+                        metavar="THREAD_COUNT", dest="threads", default=8, required=False)
 
     args = parser.parse_args()
     if not any(vars(args).values()):
@@ -42,14 +41,8 @@ def process(args):
     if Util.is_200_response(args.url):
         print("{0} [200 - OK] :: Beginning scan...".format(args.url))
 
-        if args.dir:
-            dir_scan = DirScanner(args.t)
-            found_dirs = dir_scan.scan(args.url, args.dir)
-            root_page = SiteSpider(args, found_dirs)
-        else:
-            root_page = SiteSpider(args)
-
-        root_page.scan_url(args.url)
+        website = SiteSpider(args)
+        website.scan_url(args.url)
     else:
         print("[ERROR] The URL you specified is returning an invalid response code.")
         sys.exit(1)

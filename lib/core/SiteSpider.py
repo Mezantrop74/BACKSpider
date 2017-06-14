@@ -6,21 +6,22 @@ from urllib import request
 from urllib.parse import urlsplit
 from urllib.parse import urlparse
 from lib.core import Util
+from lib.core import DirScanner
 
 spidered_links = []
 
 
 class SiteSpider(HTMLParser):
-    """Class to help with our webpage operations."""
+    """Class to help with our website operations."""
     # TODO: Don't pass whole argparse object
-    # TODO: Move additional_dir reading into this class.
-    def __init__(self, args, additional_dirs=None):
+    def __init__(self, args):
         HTMLParser.__init__(self)
         self.args = args
         self.root = args.url
-        self.additional_dirs = additional_dirs
         self.backup_extensions = Util.read_file_into_array(args.ext)
-        return
+
+        if args.dir:
+            self.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
 
     def scan_url(self, url):
         print("---###[ SCANNING {0} ]###---".format(url))

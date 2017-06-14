@@ -5,10 +5,8 @@ from lib.core import Util
 
 
 class DirScanner:
-    def __init__(self, max_threads):
-        self.threads = max_threads
-
-    def scan(self, root_url, dir_list):
+    @staticmethod
+    def scan(root_url, dir_list, thread_count):
         print("Checking for additional directories to search...")
         dir_urls = []
         dir_lines = Util.read_file_into_array(dir_list)
@@ -16,7 +14,7 @@ class DirScanner:
         for dir_line in dir_lines:
             dir_urls.append(parse.urljoin(root_url, dir_line))
 
-        thread_pool = Pool(int(self.threads))
+        thread_pool = Pool(int(thread_count))
         found_dirs = thread_pool.map(DirScanner.scan_dirs_threaded, dir_urls)
 
         thread_pool.close()
