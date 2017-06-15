@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
 import sys
 import argparse
+from lib.var import Config
 from lib.core import Util
-from lib.core import SiteSpider
+from lib.core import SiteScanner
+from lib.core import DirScanner
 
 if sys.version_info < (3, 0):
     print("[ERROR] BAKSpider requires Python 3.0 or above")
@@ -28,6 +30,9 @@ def parse_args():
     parser.add_argument("-t", help="Maximum number of concurrent threads (Default: 8)",
                         metavar="THREAD_COUNT", dest="threads", default=8, required=False)
 
+    parser.add_argument("--debug", help="Enables verbose output, useful for debugging.",
+                        action="store_true", required=False)
+
     args = parser.parse_args()
     if not any(vars(args).values()):
         parser.print_help()
@@ -37,12 +42,25 @@ def parse_args():
 
 
 # TODO: Check the URL is in the correct format http://www.example.com/
+# TODO: Check required arguments are supplied
 def process(args):
     if Util.is_200_response(args.url):
         print("{0} [200 - OK] :: Beginning scan...".format(args.url))
 
-        website = SiteSpider(args)
-        website.scan_url(args.url)
+        if args.threads:
+            Config.thread_count = int(args.threads)
+
+        if args.debug:
+            print("[DEBUG] Debug mode is enabled, output will be verbose.")
+            Config.is_debug = True
+
+        website = SiteScanner(args.url)
+
+        if args.dir:
+            website.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
+
+        website.backup_extensions = Util.read_file_into_array(args.ext)
+        website.begin_scan()
     else:
         print("[ERROR] The URL you specified is returning an invalid response code.")
         sys.exit(1)
