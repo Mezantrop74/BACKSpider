@@ -8,6 +8,11 @@ from urllib.parse import urlparse
 from lib.core import Util
 from lib.core import DirScanner
 
+# TODO: Split into further modules, LinkSpider and BackupScan
+# LinkSpider:
+#   Pass a URL (one per class instance), harvests all the file links (e.g. www.example.com/index.php)
+#   Pass the list of file links to the BackupScan class, this checks each links individually for backups.
+#   LinkSpider all these file links for more links.
 
 class SiteSpider(HTMLParser):
     """Class to help with our website operations."""
@@ -16,6 +21,7 @@ class SiteSpider(HTMLParser):
         HTMLParser.__init__(self)
         self.spidered_links = []
         self.checked_files = []
+        self.next_links = []
         self.args = args
         self.root = args.url
         self.backup_extensions = Util.read_file_into_array(args.ext)
@@ -62,6 +68,7 @@ class SiteSpider(HTMLParser):
         self.spider_url(url, clean_url)
         return
 
+    # TODO: Can't keep spidering the first link of each page. Gather all links on page and then spider together.
     def spider_url(self, url_to_spider, file_only_url):
         if not Util.is_valid_url(file_only_url):
             return
@@ -81,7 +88,7 @@ class SiteSpider(HTMLParser):
             self.spidered_links.append(url_to_spider)
 
             self.root = url_to_spider[:url_to_spider.rfind("/") + 1]
-            self.scan_url(url_to_spider)
+            self.next_links.append(url_to_spider)
 
     # TODO: Check for certain extensions (exclude PDF etc.)
     # TODO: This is still being called when the --dir option isn't specified

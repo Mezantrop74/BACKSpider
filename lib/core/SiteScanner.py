@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-from multiprocessing import Pool
+import sys
+import logging
 from lib.core import LinkSpider
 from lib.var import Config
 from lib.core import BackupScanner
+from lib.core.Util import Util
 
 
 class SiteScanner:
@@ -16,7 +18,17 @@ class SiteScanner:
         self.spidered_links = []
         self.checked_files = []
 
+        self.logger = logging.getLogger("bakspider")
+
     def begin_scan(self):
+        # Check host is online
+        if Util.is_200_response(self.url):
+            print("[200 - OK] {0} -> Beginning scan...")
+        else:
+            print("The URL you specified if returning an invalid response code.")
+            sys.exit(1)
+
+        # Start main scanning logic.
         page_links = LinkSpider(self.url)
         page_links.get_links()
         self.links_to_spider = page_links.absolute_links
@@ -39,7 +51,7 @@ class SiteScanner:
 
     def spider_link(self, url):
         if Config.is_debug:
-            print("[DEBUG] Spidering:", url)
+            self.logger.info("Spidering url: %s", url)
 
         spider = LinkSpider(url)
         spider.get_links()
@@ -49,7 +61,7 @@ class SiteScanner:
 
     def backup_check(self, fileonly_url):
         if Config.is_debug:
-            print("[DEBUG] Backup check:", fileonly_url)
+            self.logger.info("Searching for backup files: %s", fileonly_url)
 
         check = BackupScanner(fileonly_url, self.backup_extensions)
 
@@ -57,8 +69,6 @@ class SiteScanner:
             check.begin_scan(self.additional_dirs)
         else:
             check.begin_scan()
-
-        del check
 
 
 

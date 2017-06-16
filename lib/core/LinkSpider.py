@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import logging
 from lib.var import Config
 from html.parser import HTMLParser
 from urllib import parse
@@ -14,10 +15,11 @@ class LinkSpider(HTMLParser):
         self.root = url_to_spider[:url_to_spider.rfind("/") + 1]
         self.absolute_links = []
         self.fileonly_links = []
+        self.logger = logging.getLogger("bakspider")
 
     def get_links(self):
         if Config.is_debug:
-            print("[DEBUG] Starting link spider for {0}".format(self.url))
+            self.logger.info("Harvesting links on: %s", self.url)
 
         body = request.urlopen(self.url)
         encoding = body.headers.get_content_charset() or "UTF-8"

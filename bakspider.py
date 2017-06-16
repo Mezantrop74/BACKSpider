@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import sys
 import argparse
+import logging
 from lib.var import Config
 from lib.core import Util
 from lib.core import SiteScanner
@@ -44,26 +45,23 @@ def parse_args():
 # TODO: Check the URL is in the correct format http://www.example.com/
 # TODO: Check required arguments are supplied
 def process(args):
-    if Util.is_200_response(args.url):
-        print("{0} [200 - OK] :: Beginning scan...".format(args.url))
+    logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.INFO)
+    logger = logging.getLogger("bakspider")
 
-        if args.threads:
-            Config.thread_count = int(args.threads)
+    if args.threads:
+        Config.thread_count = int(args.threads)
 
-        if args.debug:
-            print("[DEBUG] Debug mode is enabled, output will be verbose.")
-            Config.is_debug = True
+    if args.debug:
+        logger.info('Debug mode is enabled, output will be verbose.')
+        Config.is_debug = True
 
-        website = SiteScanner(args.url)
+    website = SiteScanner(args.url)
 
-        if args.dir:
-            website.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
+    if args.dir:
+        website.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
 
-        website.backup_extensions = Util.read_file_into_array(args.ext)
-        website.begin_scan()
-    else:
-        print("[ERROR] The URL you specified is returning an invalid response code.")
-        sys.exit(1)
+    website.backup_extensions = Util.read_file_into_array(args.ext)
+    website.begin_scan()
 
 
 if __name__ == "__main__":

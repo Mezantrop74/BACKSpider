@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from urllib import parse
 from multiprocessing import Pool
-from lib.core import Util
+from lib.core.Util import Util
 
 
 class DirScanner:
