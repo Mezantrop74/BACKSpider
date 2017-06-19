@@ -57,6 +57,13 @@ def process(args):
         logger.info('Debug mode is enabled, output will be verbose.')
         Config.is_debug = True
 
+    # Check host is online
+    if Util.is_200_response(args.url):
+        print("[200 - OK] {0} -> Beginning scan...".format(args.url))
+    else:
+        print("The URL you specified if returning an invalid response code.")
+        sys.exit(1)
+
     website = SiteScanner(args.url)
 
     if args.dir:

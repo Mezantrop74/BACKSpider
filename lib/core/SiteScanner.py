@@ -4,7 +4,6 @@ import logging
 from lib.core import LinkSpider
 from lib.var import Config
 from lib.core import BackupScanner
-from lib.core.Util import Util
 
 
 class SiteScanner:
@@ -21,13 +20,6 @@ class SiteScanner:
         self.logger = logging.getLogger("bakspider")
 
     def begin_scan(self):
-        # Check host is online
-        if Util.is_200_response(self.url):
-            print("[200 - OK] {0} -> Beginning scan...")
-        else:
-            print("The URL you specified if returning an invalid response code.")
-            sys.exit(1)
-
         # Start main scanning logic.
         page_links = LinkSpider(self.url)
         page_links.get_links()
