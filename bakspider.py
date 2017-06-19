@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+import time
 import argparse
 import logging
 from lib.var import Config
@@ -34,6 +35,7 @@ def parse_args():
     parser.add_argument("--debug", help="Enables verbose output, useful for debugging.",
                         action="store_true", required=False)
 
+    output_header()
     args = parser.parse_args()
     if not any(vars(args).values()):
         parser.print_help()
@@ -62,6 +64,15 @@ def process(args):
 
     website.backup_extensions = Util.read_file_into_array(args.ext)
     website.begin_scan()
+
+
+def output_header():
+    print("  / _ \\\t\t|\tBAKSpider - Backup File Spider:")
+    print("\_\(_)/_/\t|\t-> Spider a website for leftover backup files.")
+    print(" _//\"\\\\_\t|")
+    print("  /   \\\t\t|\thttps://github.com/mc-soft")
+    print("--------------------------------------------------------------")
+    time.sleep(1)
 
 
 if __name__ == "__main__":
