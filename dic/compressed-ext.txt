@@ -1,8 +1,13 @@
 # COMMON COMPRESSION EXTENSIONS
 
+7z
+bz
 bz2
+bzip
+bzip2
 tar
 gz
+gzip
 tar.gz
 tar.bz2
 tar.xz
