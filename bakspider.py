@@ -3,7 +3,7 @@ import sys
 import time
 import argparse
 import logging
-from lib.var import Config
+import lib.var.Config as Config
 from lib.core import Util
 from lib.core import SiteScanner
 from lib.core import DirScanner
