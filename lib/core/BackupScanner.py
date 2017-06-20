@@ -3,7 +3,7 @@ import os
 import logging
 from urllib import parse
 from lib.var import Config
-from lib.core.Util import Util
+import lib.utils.WebUtils as WebUtils
 
 
 class BackupScanner:
@@ -33,7 +33,7 @@ class BackupScanner:
             if Config.is_debug:
                 self.logger.info("Checking: %s", backup_url)
 
-            if Util.is_200_response(backup_url):
+            if WebUtils.is_200_response(backup_url):
                 print("[200 - OK] Backup found:", backup_url)
 
         # Check without the original extension
@@ -44,5 +44,5 @@ class BackupScanner:
             if Config.is_debug:
                 self.logger.info("Checking: %s", backup_url)
 
-            if Util.is_200_response(backup_url):
+            if WebUtils.is_200_response(backup_url):
                 print("[200 - OK] Backup found:", backup_url)

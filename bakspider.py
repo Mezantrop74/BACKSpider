@@ -4,7 +4,8 @@ import time
 import argparse
 import logging
 import lib.var.Config as Config
-from lib.core import Util
+import lib.utils.WebUtils as WebUtils
+import lib.utils.FileUtils as FileUtils
 from lib.core import SiteScanner
 from lib.core import DirScanner
 
@@ -58,7 +59,7 @@ def process(args):
         Config.is_debug = True
 
     # Check host is online
-    if Util.is_200_response(args.url):
+    if WebUtils.is_200_response(args.url):
         print("[200 - OK] {0} -> Beginning scan...".format(args.url))
     else:
         print("The URL you specified if returning an invalid response code.")
@@ -69,7 +70,7 @@ def process(args):
     if args.dir:
         website.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
 
-    website.backup_extensions = Util.read_file_into_array(args.ext)
+    website.backup_extensions = FileUtils.read_file_into_array(args.ext)
     website.begin_scan()
 
 
