@@ -1,16 +1,16 @@
 # COMMON BACKUP EXTENSIONS
 # Thanks to: https://github.com/fuzzdb-project/fuzzdb
 
-backup
-bck
-old
-save
-bak
-sav
+.backup
+.bck
+.old
+.save
+.bak
+.sav
 ~
-copy
-old
-orig
-tmp
-txt
-back
+.copy
+.old
+.orig
+.tmp
+.txt
+.back

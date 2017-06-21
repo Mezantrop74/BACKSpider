@@ -28,7 +28,7 @@ class BackupScanner:
     def check_for_backups(self, url):
         # Check with the original extension
         for ext in self.backup_extensions:
-            backup_url = "{0}.{1}".format(url, ext)
+            backup_url = "{0}{1}".format(url, ext)
 
             if Config.is_debug:
                 self.logger.info("Checking: %s", backup_url)
@@ -39,7 +39,7 @@ class BackupScanner:
         # Check without the original extension
         url = url.rsplit('.', 1)[0]
         for ext in self.backup_extensions:
-            backup_url = "{0}.{1}".format(url, ext)
+            backup_url = "{0}{1}".format(url, ext)
 
             if Config.is_debug:
                 self.logger.info("Checking: %s", backup_url)
