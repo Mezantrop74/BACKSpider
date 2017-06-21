@@ -8,7 +8,7 @@ import lib.utils.FileUtils as FileUtils
 class DirScanner:
     @staticmethod
     def scan(root_url, dir_list, thread_count):
-        print("Checking for additional directories to search...")
+        print("[+] Checking for additional directories to search...")
         dir_urls = []
         dir_lines = FileUtils.read_file_into_array(dir_list)
 
@@ -20,6 +20,8 @@ class DirScanner:
 
         thread_pool.close()
         thread_pool.join()
+
+        print("[+] Directory scan finished!")
         return found_dirs
 
     @staticmethod
@@ -29,5 +31,5 @@ class DirScanner:
             if not url.endswith('/'):
                 url += '/'
 
-            print("[200 - OK] Directory found: ", url)
+            print("\t[200 - OK] Directory found: ", url)
             return url

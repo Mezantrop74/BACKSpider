@@ -34,7 +34,7 @@ class BackupScanner:
                 self.logger.info("Checking: %s", backup_url)
 
             if WebUtils.is_200_response(backup_url):
-                print("[200 - OK] Backup found:", backup_url)
+                print("\t[200 - OK] Backup found:", backup_url)
 
         # Check without the original extension
         url = url.rsplit('.', 1)[0]
@@ -45,4 +45,4 @@ class BackupScanner:
                 self.logger.info("Checking: %s", backup_url)
 
             if WebUtils.is_200_response(backup_url):
-                print("[200 - OK] Backup found:", backup_url)
+                print("\t[200 - OK] Backup found:", backup_url)

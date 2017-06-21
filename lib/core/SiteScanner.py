@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
+import time
 import logging
+from datetime import datetime
 from lib.core import LinkSpider
 from lib.var import Config
 from lib.core import BackupScanner
@@ -21,6 +23,10 @@ class SiteScanner:
         self.logger = logging.getLogger("bakspider")
 
     def begin_scan(self):
+        # Start timer
+        start_time = datetime.now()
+        print("[+] Starting backup scan at:", start_time.strftime("%Y-%m-%d %H:%M:%S"))
+
         # Start main scanning logic.
         page_links = LinkSpider(self.url)
         page_links.get_links()
@@ -41,6 +47,9 @@ class SiteScanner:
                 if backup_link not in self.checked_files:
                     self.backup_check(backup_link)
                     self.checked_files.append(backup_link)
+
+        print("[*] Backup scan completed at:", start_time.strftime("%Y-%m-%d %H:%M:%S"))
+        print("[*] Time elapsed:", (datetime.now() - start_time))
 
     def spider_link(self, url):
         if Config.is_debug:
@@ -68,7 +77,3 @@ class SiteScanner:
             check.begin_scan(self.additional_dirs)
         else:
             check.begin_scan()
-
-
-
-
