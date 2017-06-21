@@ -3,6 +3,7 @@ import logging
 from lib.core import LinkSpider
 from lib.var import Config
 from lib.core import BackupScanner
+import lib.utils.WebUtils as WebUtils
 
 
 class SiteScanner:
@@ -12,6 +13,7 @@ class SiteScanner:
         self.links_to_bak_check = []
         self.additional_dirs = []
         self.backup_extensions = []
+        self.whitelist_extensions = []
 
         self.spidered_links = []
         self.checked_files = []
@@ -51,6 +53,12 @@ class SiteScanner:
         self.links_to_bak_check = self.links_to_bak_check + spider.fileonly_links
 
     def backup_check(self, fileonly_url):
+        url_ext = WebUtils.get_url_extension(fileonly_url)
+
+        if url_ext not in self.whitelist_extensions:
+            self.logger.info("This URL has no extension or it isn't in the whitelist. [{0}]".format(fileonly_url))
+            return
+
         if Config.is_debug:
             self.logger.info("Searching for backup files: %s", fileonly_url)
 

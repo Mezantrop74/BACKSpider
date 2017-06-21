@@ -24,11 +24,16 @@ def parse_args():
     required = parser.add_argument_group("required arguments")
     required.add_argument("-u", "--url", help="The Target URL (e.g. http://www.example.com/)", required=True)
 
-    parser.add_argument("-d", "--dir", help="File containing additional directories to check for backups, "
-                        "this option can increase scan time dramatically.", required=False)
+    parser.add_argument("-d", "--dir",
+                        help="File containing additional directories to check for backups, "
+                        "this option can increase scan time dramatically.",
+                        required=False)
 
-    parser.add_argument("-e", "--ext", help="File containing backup extensions to use. (Default: dic/common-ext.txt)",
-                        default="dic/common-ext.txt", required=False)
+    parser.add_argument("-b", "--bakext", default="dic/common-extensions.txt", required=False,
+                        help="File containing backup extensions to search for. (Default: dic/common-extensions.txt)")
+
+    parser.add_argument("-e", "--ext", default="dic/whitelist-extensions.txt", required=False,
+                        help="Whitelist extensions, only URLs with this extension will be checked for backups.")
 
     parser.add_argument("-t", help="Maximum number of concurrent threads (Default: 8)",
                         metavar="THREAD_COUNT", dest="threads", default=8, required=False)
@@ -70,7 +75,8 @@ def process(args):
     if args.dir:
         website.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
 
-    website.backup_extensions = FileUtils.read_file_into_array(args.ext)
+    website.backup_extensions = FileUtils.read_file_into_array(args.bakext)
+    website.whitelist_extensions = FileUtils.read_file_into_array(args.ext)
     website.begin_scan()
 
 

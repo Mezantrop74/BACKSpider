@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from urllib import request
+from urllib.parse import urlparse
+from os.path import splitext
 
 
 # TODO: Check for redirect to 404 page (will return 200)
@@ -16,3 +18,10 @@ def is_valid_url(url):
         return False
 
     return True
+
+
+def get_url_extension(url):
+    path = urlparse(url).path
+    ext = splitext(path)[1]
+
+    return ext[1:].split(':')[0]
