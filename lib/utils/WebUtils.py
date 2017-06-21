@@ -14,10 +14,10 @@ def is_200_response(url):
 
 
 def is_valid_url(url):
-    if url.startswith("mailto"):
-        return False
+    if url.startswith("http"):
+        return True
 
-    return True
+    return False
 
 
 def get_url_extension(url):

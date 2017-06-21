@@ -55,6 +55,9 @@ class SiteScanner:
         if Config.is_debug:
             self.logger.info("Spidering url: %s", url)
 
+        if not WebUtils.is_valid_url(url):
+            return
+
         spider = LinkSpider(url)
         spider.get_links()
 

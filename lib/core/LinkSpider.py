@@ -35,6 +35,10 @@ class LinkSpider(HTMLParser):
             for name, value in attrs:
                 if name == "href":
                     abs_url = self.get_absolute_url(value)
+
+                    if abs_url is None:
+                        continue
+
                     file_url = self.get_file_only_url(abs_url)
 
                     self.absolute_links.append(abs_url)
