@@ -2,6 +2,7 @@
 import logging
 from lib.var import Config
 from html.parser import HTMLParser
+import urllib.error
 from urllib import parse
 from urllib import request
 from urllib.parse import urlsplit
@@ -21,13 +22,16 @@ class LinkSpider(HTMLParser):
         if Config.is_debug:
             self.logger.info("Harvesting links on: %s", self.url)
 
-        body = request.urlopen(self.url)
-        encoding = body.headers.get_content_charset() or "UTF-8"
-
         try:
-            for line in body:
-                self.feed(line.decode(encoding))
-        except UnicodeDecodeError:
+            body = request.urlopen(self.url)
+            encoding = body.headers.get_content_charset() or "UTF-8"
+
+            try:
+                for line in body:
+                    self.feed(line.decode(encoding))
+            except UnicodeDecodeError:
+                pass
+        except urllib.error.HTTPError:
             pass
 
     def handle_starttag(self, tag, attrs):
