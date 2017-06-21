@@ -3,17 +3,22 @@ from urllib import parse
 from multiprocessing import Pool
 import lib.utils.WebUtils as WebUtils
 import lib.utils.FileUtils as FileUtils
-
+from lib.utils.Output import Output
 
 class DirScanner:
-    @staticmethod
-    def scan(root_url, dir_list, thread_count):
-        print("[+] Checking for additional directories to search...")
+    def __init__(self, root_url, dir_list, output):
+        self.root_url = root_url
+        self.dir_list = dir_list
+        self.output = output
+
+    def scan(self, thread_count):
+        self.output.progress("Checking for additional directories to search...")
+
         dir_urls = []
-        dir_lines = FileUtils.read_file_into_array(dir_list)
+        dir_lines = FileUtils.read_file_into_array(self.dir_list)
 
         for dir_line in dir_lines:
-            dir_urls.append(parse.urljoin(root_url, dir_line))
+            dir_urls.append(parse.urljoin(self.root_url, dir_line))
 
         thread_pool = Pool(int(thread_count))
         found_dirs = thread_pool.map(DirScanner.scan_dirs_threaded, dir_urls)
@@ -21,7 +26,7 @@ class DirScanner:
         thread_pool.close()
         thread_pool.join()
 
-        print("[+] Directory scan finished!")
+        self.output.progress("Directory scan finished!")
         return [value for value in found_dirs if value is not None]
 
     @staticmethod
@@ -31,5 +36,6 @@ class DirScanner:
             if not url.endswith('/'):
                 url += '/'
 
-            print("\t[200 - OK] Directory found: ", url)
+            output = Output()
+            output.page_found("Directory found: {0}".format(url), True)
             return url

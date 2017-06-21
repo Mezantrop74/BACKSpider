@@ -4,6 +4,7 @@ import time
 import argparse
 import logging
 import lib.var.Config as Config
+from lib.utils import Output
 import lib.utils.WebUtils as WebUtils
 import lib.utils.FileUtils as FileUtils
 from lib.core import SiteScanner
@@ -41,7 +42,9 @@ def parse_args():
     parser.add_argument("--debug", help="Enables verbose output, useful for debugging.",
                         action="store_true", required=False)
 
-    output_header()
+    output = Output()
+    output.show_header(1)
+
     args = parser.parse_args()
     if not any(vars(args).values()):
         parser.print_help()
@@ -53,6 +56,7 @@ def parse_args():
 # TODO: Check the URL is in the correct format http://www.example.com/
 # TODO: Check required arguments are supplied
 def process(args):
+    output = Output()
     logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.INFO)
     logger = logging.getLogger("bakspider")
 
@@ -65,28 +69,20 @@ def process(args):
 
     # Check host is online
     if WebUtils.is_200_response(args.url):
-        print("[200 - OK] {0} -> Beginning scan...".format(args.url))
+        output.page_found("{0} -> Beginning scan...".format(args.url), False)
     else:
-        print("The URL you specified if returning an invalid response code.")
+        output.error("The URL you specified if returning an invalid response code.")
         sys.exit(1)
 
-    website = SiteScanner(args.url)
+    website = SiteScanner(args.url, output)
 
     if args.dir:
-        website.additional_dirs = DirScanner.scan(args.url, args.dir, args.threads)
+        dir_scan = DirScanner(args.url, args.dir, output)
+        website.additional_dirs = dir_scan.scan(args.threads)
 
     website.backup_extensions = FileUtils.read_file_into_array(args.bakext)
     website.whitelist_extensions = FileUtils.read_file_into_array(args.ext)
     website.begin_scan()
-
-
-def output_header():
-    print("  / _ \\\t\t|\tBAKSpider - Backup File Spider:")
-    print("\_\(_)/_/\t|\t-> Spider a website for leftover backup files.")
-    print(" _//\"\\\\_\t|")
-    print("  /   \\\t\t|\thttps://github.com/mc-soft")
-    print("--------------------------------------------------------------")
-    time.sleep(1)
 
 
 if __name__ == "__main__":

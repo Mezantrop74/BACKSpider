@@ -8,8 +8,9 @@ import lib.utils.WebUtils as WebUtils
 
 
 class SiteScanner:
-    def __init__(self, url):
+    def __init__(self, url, output):
         self.url = url
+        self.output = output
         self.links_to_spider = []
         self.links_to_bak_check = []
         self.additional_dirs = []
@@ -24,7 +25,7 @@ class SiteScanner:
     def begin_scan(self):
         # Start timer
         start_time = datetime.now()
-        print("[+] Starting backup scan at:", start_time.strftime("%Y-%m-%d %H:%M:%S"))
+        self.output.progress("Starting backup scan at: {0}".format(start_time.strftime("%Y-%m-%d %H:%M:%S")))
 
         # Start main scanning logic.
         page_links = LinkSpider(self.url)
@@ -47,8 +48,8 @@ class SiteScanner:
                     self.backup_check(backup_link)
                     self.checked_files.append(backup_link)
 
-        print("[*] Backup scan completed at:", start_time.strftime("%Y-%m-%d %H:%M:%S"))
-        print("[*] Time elapsed:", (datetime.now() - start_time))
+        self.output.status("Backup scan completed at: {0}".format(datetime.now().strftime("%Y-%m-%d %H:%M:%S")))
+        self.output.status("Time elapsed: {0}".format((datetime.now() - start_time)))
 
     def spider_link(self, url):
         if Config.is_debug:
@@ -74,7 +75,7 @@ class SiteScanner:
         if Config.is_debug:
             self.logger.info("Searching for backup files: %s", fileonly_url)
 
-        check = BackupScanner(fileonly_url, self.backup_extensions)
+        check = BackupScanner(fileonly_url, self.backup_extensions, self.output)
 
         if self.additional_dirs:
             check.begin_scan(self.additional_dirs)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import sys
+from lib.utils import Output
 
 
 def read_file_into_array(file_path):
@@ -13,5 +14,6 @@ def read_file_into_array(file_path):
             return file_lines
 
     except FileNotFoundError:
-        print("[ERROR] Could not find the file you specified. ({0})".format(file_path))
+        output = Output()
+        output.error("Could not find the file you specified. ({0})".format(file_path))
         sys.exit(1)

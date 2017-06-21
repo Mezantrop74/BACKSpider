@@ -7,9 +7,10 @@ import lib.utils.WebUtils as WebUtils
 
 
 class BackupScanner:
-    def __init__(self, fileonly_url, backup_exts):
+    def __init__(self, fileonly_url, backup_exts, output):
         self.url = fileonly_url
         self.backup_extensions = backup_exts
+        self.output = output
         self.logger = logging.getLogger("bakspider")
 
     def begin_scan(self, found_dirs=None):
@@ -34,7 +35,7 @@ class BackupScanner:
                 self.logger.info("Checking: %s", backup_url)
 
             if WebUtils.is_200_response(backup_url):
-                print("\t[200 - OK] Backup found:", backup_url)
+                self.output.page_found("Backup found: {0}".format(backup_url), True)
 
         # Check without the original extension
         url = url.rsplit('.', 1)[0]
@@ -45,4 +46,4 @@ class BackupScanner:
                 self.logger.info("Checking: %s", backup_url)
 
             if WebUtils.is_200_response(backup_url):
-                print("\t[200 - OK] Backup found:", backup_url)
+                self.output.page_found("Backup found: {0}".format(backup_url), True)
