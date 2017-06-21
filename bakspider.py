@@ -18,7 +18,7 @@ def parse_args():
     parser = argparse.ArgumentParser(
         description="Attempts to find old files such as un-removed backups/configs on the web "
                     "server by either crawling the website or using dictionary based attacks.",
-        epilog="Please report any issues to: bugs@m-croston.co.uk"
+        epilog="Please report any issues on the GitHub repo."
     )
 
     required = parser.add_argument_group("required arguments")
