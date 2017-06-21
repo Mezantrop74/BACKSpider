@@ -68,7 +68,8 @@ class SiteScanner:
         url_ext = WebUtils.get_url_extension(fileonly_url)
 
         if url_ext not in self.whitelist_extensions:
-            self.logger.info("This URL has no extension or it isn't in the whitelist. [{0}]".format(fileonly_url))
+            if Config.is_debug:
+                self.logger.info("This URL has no extension or it isn't in the whitelist. [{0}]".format(fileonly_url))
             return
 
         if Config.is_debug:
