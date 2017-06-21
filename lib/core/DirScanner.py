@@ -22,7 +22,7 @@ class DirScanner:
         thread_pool.join()
 
         print("[+] Directory scan finished!")
-        return found_dirs
+        return [value for value in found_dirs if value is not None]
 
     @staticmethod
     def scan_dirs_threaded(url):
