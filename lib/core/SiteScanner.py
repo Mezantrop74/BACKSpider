@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-import time
 import logging
 from datetime import datetime
 from lib.core import LinkSpider
