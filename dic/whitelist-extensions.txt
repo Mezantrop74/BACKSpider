@@ -1,0 +1,23 @@
+# WHITELISTED EXTENSIONS
+#   > Only files with these extensions will be checked for backups.
+#   > Prevents un-needed files from being scanned (.pdf, .html etc)
+#
+# Thanks to: https://github.com/fuzzdb-project/fuzzdb
+asp
+aspx
+cgi
+php
+php3
+php4
+php5
+shtm
+shtml
+phtm
+phtml
+jhtml
+pl
+jsp
+cfm
+cfml
+py
+rb
