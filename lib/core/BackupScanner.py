@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 import os
 import logging
-from functools import partial
-from itertools import repeat
 from multiprocessing import Pool
 from urllib import parse
 import lib.utils.WebUtils as WebUtils
@@ -17,31 +15,33 @@ class BackupScanner:
         self.thread_count = thread_count
         self.logger = logging.getLogger("bakspider")
 
+        self.backup_urls = []
+
     def begin_scan(self, found_dirs=None):
-        self.check_for_backups(self.url)
+        self.prepare_for_check(self.url)
 
         if found_dirs:
             filename = os.path.basename(self.url)
 
-            self.logger.info("Checking found directories for: %s", filename)
-
             for dir_path in found_dirs:
                 dir_url = parse.urljoin(dir_path, filename)
-                self.check_for_backups(dir_url)
+                self.prepare_for_check(dir_url)
 
-    def check_for_backups(self, url):
-        backup_urls = []
+        self.check_for_backups()
+
+    def prepare_for_check(self, url):
         # Check with the original extension
         for ext in self.backup_extensions:
-            backup_urls.append("{0}{1}".format(url, ext))
+            self.backup_urls.append("{0}{1}".format(url, ext))
 
         # Check without the original extension
         url = url.rsplit('.', 1)[0]
         for ext in self.backup_extensions:
-            backup_urls.append("{0}{1}".format(url, ext))
+            self.backup_urls.append("{0}{1}".format(url, ext))
 
+    def check_for_backups(self):
         thread_pool = Pool(int(self.thread_count))
-        thread_pool.map(self.check_for_backups_threaded, backup_urls)
+        thread_pool.map(self.check_for_backups_threaded, self.backup_urls)
         thread_pool.close()
         thread_pool.join()
 
