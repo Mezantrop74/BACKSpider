@@ -2,6 +2,9 @@
 
 BAKSpider is an easy-to-use python script that spiders a target for backup files left on the server.
 
+Below is an screenshot taken when BAKSpider is used on a live production website (URL removed for security):
+
+<img align="center" src="/img/demo.png?raw=true" alt="demo image">
 
 
 ## Getting Started
