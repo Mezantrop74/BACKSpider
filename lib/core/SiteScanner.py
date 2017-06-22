@@ -2,15 +2,15 @@
 import logging
 from datetime import datetime
 from lib.core import LinkSpider
-from lib.var import Config
 from lib.core import BackupScanner
 import lib.utils.WebUtils as WebUtils
 
 
 class SiteScanner:
-    def __init__(self, url, output):
+    def __init__(self, url, output, thread_count):
         self.url = url
         self.output = output
+        self.thread_count = thread_count
         self.links_to_spider = []
         self.links_to_bak_check = []
         self.additional_dirs = []
@@ -52,8 +52,7 @@ class SiteScanner:
         self.output.status("Time elapsed: {0}".format((datetime.now() - start_time)))
 
     def spider_link(self, url):
-        if Config.is_debug:
-            self.logger.info("Spidering url: %s", url)
+        self.logger.info("Spidering url: %s", url)
 
         if not WebUtils.is_valid_url(url):
             return
@@ -68,14 +67,12 @@ class SiteScanner:
         url_ext = WebUtils.get_url_extension(fileonly_url)
 
         if url_ext not in self.whitelist_extensions:
-            if Config.is_debug:
-                self.logger.info("This URL has no extension or it isn't in the whitelist. [{0}]".format(fileonly_url))
+            self.logger.info("This URL has no extension or it isn't in the whitelist. [{0}]".format(fileonly_url))
             return
 
-        if Config.is_debug:
-            self.logger.info("Searching for backup files: %s", fileonly_url)
+        self.logger.info("Searching for backup files: %s", fileonly_url)
 
-        check = BackupScanner(fileonly_url, self.backup_extensions, self.output)
+        check = BackupScanner(fileonly_url, self.backup_extensions, self.output, self.thread_count)
 
         if self.additional_dirs:
             check.begin_scan(self.additional_dirs)

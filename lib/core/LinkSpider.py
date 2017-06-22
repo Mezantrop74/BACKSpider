@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import logging
-from lib.var import Config
 from html.parser import HTMLParser
 import urllib.error
 from urllib import parse
@@ -19,8 +18,7 @@ class LinkSpider(HTMLParser):
         self.logger = logging.getLogger("bakspider")
 
     def get_links(self):
-        if Config.is_debug:
-            self.logger.info("Harvesting links on: %s", self.url)
+        self.logger.info("Harvesting links on: %s", self.url)
 
         try:
             body = request.urlopen(self.url)

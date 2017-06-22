@@ -3,7 +3,6 @@ import sys
 import time
 import argparse
 import logging
-import lib.var.Config as Config
 from lib.utils import Output
 import lib.utils.WebUtils as WebUtils
 import lib.utils.FileUtils as FileUtils
@@ -60,12 +59,10 @@ def process(args):
     logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.INFO)
     logger = logging.getLogger("bakspider")
 
-    if args.threads:
-        Config.thread_count = int(args.threads)
-
     if args.debug:
         logger.info('Debug mode is enabled, output will be verbose.')
-        Config.is_debug = True
+    else:
+        logger.disabled = True
 
     # Check host is online
     if WebUtils.is_200_response(args.url):
@@ -74,7 +71,7 @@ def process(args):
         output.error("The URL you specified if returning an invalid response code.")
         sys.exit(1)
 
-    website = SiteScanner(args.url, output)
+    website = SiteScanner(args.url, output, args.threads)
 
     if args.dir:
         dir_scan = DirScanner(args.url, args.dir, output)
