@@ -68,7 +68,7 @@ def process(args):
     if WebUtils.is_200_response(args.url):
         output.page_found("{0} -> Beginning scan...".format(args.url), False)
     else:
-        output.error("The URL you specified if returning an invalid response code.")
+        output.error("The URL you specified is returning an invalid response code.")
         sys.exit(1)
 
     website = SiteScanner(args.url, output, args.threads)
