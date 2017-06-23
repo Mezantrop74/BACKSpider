@@ -22,8 +22,16 @@ class Output:
         else:
             print(output)
 
-    def progress(self, message):
-        print("[{0}+{1}] {2}".format(self.BR_YELLOW, self.ORIG, message))
+    def progress(self, message, indent = False):
+        output = "[{0}+{1}] {2}".format(self.BR_YELLOW, self.ORIG, message)
+
+        if indent:
+            print("\t", output)
+        else:
+            print(output)
+
+    def negative(self, message):
+        print("[{0}-{1}] {2}".format(self.BR_RED, self.ORIG, message))
 
     def status(self, message):
         print("[{0}*{1}] {2}".format(self.BR_CYAN, self.ORIG, message))

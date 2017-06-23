@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 from urllib import parse
-import lib.utils.WebUtils as WebUtils
+from lib.utils.WebUtils import WebUtils
 import lib.utils.FileUtils as FileUtils
 from lib.utils.Output import Output
 from multiprocessing.pool import ThreadPool

@@ -3,7 +3,7 @@ import logging
 from datetime import datetime
 from lib.core import LinkSpider
 from lib.core import BackupScanner
-import lib.utils.WebUtils as WebUtils
+from lib.utils.WebUtils import WebUtils
 
 
 class SiteScanner:
@@ -21,6 +21,10 @@ class SiteScanner:
         self.checked_files = []
 
         self.logger = logging.getLogger("bakspider")
+
+        if not WebUtils.site_has_valid_response_codes(url):
+            output.negative("The site is returning invalid response codes for non-existent links...")
+            output.progress("Additional checks will be performed to prevent false positives.", True)
 
     def begin_scan(self):
         # Start timer

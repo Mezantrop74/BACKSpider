@@ -1,19 +1,20 @@
 #!/usr/bin/env python3
 import sys
-import time
 import argparse
 import logging
-from lib.utils import Output
-import lib.utils.WebUtils as WebUtils
-import lib.utils.FileUtils as FileUtils
 from lib.core import SiteScanner
 from lib.core import DirScanner
+from lib.utils import Output
+from lib.utils.WebUtils import WebUtils
+import lib.utils.FileUtils as FileUtils
+
 
 if sys.version_info < (3, 0):
     print("[ERROR] BAKSpider requires Python 3.0 or above")
     sys.exit(1)
 
 
+# TODO: Catch keyboardinterrupt
 def parse_args():
     parser = argparse.ArgumentParser(
         description="Attempts to find old files such as un-removed backups/configs on the web "
@@ -53,7 +54,6 @@ def parse_args():
 
 
 # TODO: Check the URL is in the correct format http://www.example.com/
-# TODO: Check required arguments are supplied
 def process(args):
     output = Output()
     logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.INFO)
@@ -81,6 +81,6 @@ def process(args):
     website.whitelist_extensions = FileUtils.read_file_into_array(args.ext)
     website.begin_scan()
 
-
+# TODO: Check if we are flooding the host and adjust a timeout to slow down requests
 if __name__ == "__main__":
     parse_args()
