@@ -73,7 +73,6 @@ def process(args):
         output.negative("http://www.example.com")
         sys.exit(1)
 
-
     # Check host is online
     if WebUtils.is_200_response(args.url):
         output.page_found("{0} -> Beginning scan...".format(args.url), False)

@@ -24,7 +24,7 @@ class SiteScanner:
 
         if not WebUtils.site_has_valid_response_codes(url):
             output.negative("The site is returning invalid response codes for non-existent links...")
-            output.progress("Additional checks will be performed to prevent false positives.", True)
+            output.progress("Scan time may increase as we will now check for false-positives.", True)
 
     def begin_scan(self):
         # Start timer
