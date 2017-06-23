@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 from urllib import parse
-from multiprocessing import Pool
 import lib.utils.WebUtils as WebUtils
 import lib.utils.FileUtils as FileUtils
 from lib.utils.Output import Output
+from multiprocessing.pool import ThreadPool
 
 class DirScanner:
     def __init__(self, root_url, dir_list, output):
@@ -20,7 +20,7 @@ class DirScanner:
         for dir_line in dir_lines:
             dir_urls.append(parse.urljoin(self.root_url, dir_line))
 
-        thread_pool = Pool(int(thread_count))
+        thread_pool = ThreadPool(int(thread_count))
         found_dirs = thread_pool.map(DirScanner.scan_dirs_threaded, dir_urls)
 
         thread_pool.close()

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import os
 import logging
-from multiprocessing import Pool
+from multiprocessing.pool import ThreadPool
 from urllib import parse
 import lib.utils.WebUtils as WebUtils
 from lib.utils.Output import Output
@@ -40,7 +40,7 @@ class BackupScanner:
             self.backup_urls.append("{0}{1}".format(url, ext))
 
     def check_for_backups(self):
-        thread_pool = Pool(int(self.thread_count))
+        thread_pool = ThreadPool(int(self.thread_count))
         thread_pool.map(self.check_for_backups_threaded, self.backup_urls)
         thread_pool.close()
         thread_pool.join()
