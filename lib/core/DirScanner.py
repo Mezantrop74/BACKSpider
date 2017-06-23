@@ -5,6 +5,7 @@ from lib.utils.WebUtils import WebUtils
 import lib.utils.FileUtils as FileUtils
 from multiprocessing.pool import ThreadPool
 
+
 class DirScanner:
     def __init__(self, root_url, dir_list, output):
         self.root_url = root_url

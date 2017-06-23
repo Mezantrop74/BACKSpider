@@ -9,14 +9,12 @@ fake_page_word_dict = {}
 
 
 class WebPage:
-    def __init__(self, url):
+    def __init__(self, body):
         self.regex = re.compile(r'\w+')
-        self.body = request.urlopen(url)
-        self.response_code = self.body.getcode()
-        self.encoding = self.body.headers.get_content_charset() or "UTF-8"
+        self.body = body
 
     def get_word_dict(self):
-        body = self.body.read().decode(self.encoding)
+        body = self.body.read().decode(self.body.headers.get_content_charset() or "UTF-8")
         word_vector = self.regex.findall(body)
 
         return Counter(word_vector)
@@ -39,17 +37,20 @@ class WebPage:
             return float(numerator) / denominator
 
 
+# TODO: Use different is_200_response function without global if not needed, performance impact is large currently.
 class WebUtils:
     @staticmethod
     def is_200_response(url):
         try:
-            if request.urlopen(url).getcode() == 200:
-                global fake_page_word_dict
+            body = request.urlopen(url)
 
+            if body.getcode() == 200:
+                url_page = WebPage(body)
+
+                #global fake_page_word_dict
                 if not fake_page_word_dict:
                     return True
                 else:
-                    url_page = WebPage(url)
                     cosine_sim = url_page.get_cosine_sim(fake_page_word_dict)
 
                     if cosine_sim < 0.85:  # TODO: Perhaps allow user to set a custom value?
@@ -86,8 +87,10 @@ class WebUtils:
         test_url = WebUtils.generate_random_url(url, 40)
 
         try:
-            if request.urlopen(test_url).getcode() == 200:
-                test_page = WebPage(test_url)
+            test_body = request.urlopen(test_url)
+
+            if test_body.getcode() == 200:
+                test_page = WebPage(test_body)
 
                 global fake_page_word_dict
                 fake_page_word_dict = test_page.get_word_dict()
