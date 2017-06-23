@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import sys
-from lib.utils import Output
+from lib.utils.Output import Output
 
 
 def read_file_into_array(file_path):
