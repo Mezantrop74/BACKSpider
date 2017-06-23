@@ -58,7 +58,7 @@ class SiteScanner:
     def spider_link(self, url):
         self.logger.info("Spidering url: %s", url)
 
-        if not WebUtils.is_valid_url(url):
+        if not WebUtils.is_valid_spider_url(url):
             return
 
         spider = LinkSpider(url)

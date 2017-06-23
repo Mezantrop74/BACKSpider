@@ -53,7 +53,6 @@ def parse_args():
     process(args)
 
 
-# TODO: Check the URL is in the correct format http://www.example.com/
 def process(args):
     output = Output()
     logging.basicConfig(format='[%(levelname)s]: %(message)s', level=logging.INFO)
@@ -63,6 +62,17 @@ def process(args):
         logger.info('Debug mode is enabled, output will be verbose.')
     else:
         logger.disabled = True
+
+    if not WebUtils.is_valid_target_url(args.url):
+        output.error("The URL you specified is not in the correct format, see examples:")
+        print("\nValid examples:")
+        output.status("http://www.example.com/")
+        output.status("http://example.com/")
+        print("\nInvalid examples:")
+        output.negative("www.example.com")
+        output.negative("http://www.example.com")
+        sys.exit(1)
+
 
     # Check host is online
     if WebUtils.is_200_response(args.url):

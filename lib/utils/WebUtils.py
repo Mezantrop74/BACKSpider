@@ -61,8 +61,15 @@ class WebUtils:
             return False
 
     @staticmethod
-    def is_valid_url(url):
+    def is_valid_spider_url(url):
         if url.startswith("http"):
+            return True
+
+        return False
+
+    @staticmethod
+    def is_valid_target_url(url):
+        if url.startswith("http") and "://" in url and url.endswith('/'):
             return True
 
         return False
