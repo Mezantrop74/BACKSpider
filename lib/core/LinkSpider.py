@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 import logging
-from html.parser import HTMLParser
 import urllib.error
 from urllib import parse
 from urllib import request
 from urllib.parse import urlsplit
 from urllib.parse import urlparse
-
+from html.parser import HTMLParser
 
 class LinkSpider(HTMLParser):
     def __init__(self, url_to_spider):

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 from urllib import parse
+from lib.utils.Output import Output
 from lib.utils.WebUtils import WebUtils
 import lib.utils.FileUtils as FileUtils
-from lib.utils.Output import Output
 from multiprocessing.pool import ThreadPool
 
 class DirScanner:

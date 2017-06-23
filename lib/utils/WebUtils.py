@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import re, math, random, string
-from collections import Counter
+from os.path import splitext
 from urllib import request
 from urllib.parse import urlparse
-from os.path import splitext
+from collections import Counter
 
 fake_page_word_dict = {}
 

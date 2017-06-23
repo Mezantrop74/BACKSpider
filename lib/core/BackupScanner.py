@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 import os
 import logging
-from multiprocessing.pool import ThreadPool
 from urllib import parse
-import lib.utils.WebUtils as WebUtils
 from lib.utils.Output import Output
+import lib.utils.WebUtils as WebUtils
+from multiprocessing.pool import ThreadPool
 
 
 class BackupScanner:
