@@ -75,7 +75,7 @@ required arguments:
 
 ## Contributors
 
-* **Matthew Croston** - *Original Developer* - [mc-soft](https://github.com/mc-soft) - [http://m-croston.co.uk/](http://www.m-croston.co.uk/)
+* **Matthew Croston** - *Original Developer* - [mt-code](https://github.com/mt-code) - [https://mtcode.co.uk/](https://mtcode.co.uk/)
 
 ## License
 
